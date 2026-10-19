@@ -1,0 +1,75 @@
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('components', {
+            components: {},
+            componentNames() {
+                return Object.keys(this.components);
+            },
+            add(componentId, component) {
+                this.components[componentId] = component;
+            },
+            get(componentId) {
+                return this.components[componentId];
+            }
+        });
+
+        const ComponentExtender = {
+            extenders: [],
+            addExtender(extenderName, extenderCallback) {
+                this.extenders.push({
+                    name: name,
+                    callback: extenderCallback,
+                });
+            },
+            extend(componentName, component, args) {
+                this.extenders.forEach((extender) => {
+                    extender.callback(componentName, component, args);
+                });
+
+                return component;
+            }
+        };
+
+        ComponentExtender.addExtender(
+            'component1Extender',
+            (componentName, component, args) => {
+                if (componentName !== 'component1') {
+                    return;
+                }
+
+                component.foo = 'component1-override';
+                component.customProperty = 'Hello World';
+            }
+        );
+
+        Alpine.data = new Proxy(Alpine.data, {
+            apply(target, thisArg, args) {
+                const [name, factory] = args;
+                if (typeof factory !== 'function') {
+                    return Reflect.apply(target, thisArg, args);
+                }
+
+                const extendedFactory = new Proxy(factory, {
+                    apply(target, thisArg, factoryArgs) {
+                        const component = Reflect.apply(
+                            target,
+                            thisArg,
+                            factoryArgs
+                        );
+
+                        return ComponentExtender.extend(
+                            name,
+                            component,
+                            factoryArgs
+                        );
+                    }
+                });
+
+                return Reflect.apply(target, thisArg, [
+                    name,
+                    extendedFactory
+                ]);
+            }
+        });
+    });
+</script>

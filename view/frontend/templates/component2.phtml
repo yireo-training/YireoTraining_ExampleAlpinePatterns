@@ -1,0 +1,13 @@
+<div x-data="component2">
+    Component 2: <span x-text="foo"></span>
+</div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('component2', () => {
+            return {
+                foo: 'component2'
+            }
+        });
+    });
+</script>

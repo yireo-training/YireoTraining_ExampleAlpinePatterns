@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block template="YireoTraining_ExampleAlpinePatterns::store.phtml" before="component1"/>
+            <block name="component1" template="YireoTraining_ExampleAlpinePatterns::component1.phtml" before="-"/>
+            <block template="YireoTraining_ExampleAlpinePatterns::component2.phtml" before="-"/>
+        </referenceContainer>
+    </body>
+</page>
